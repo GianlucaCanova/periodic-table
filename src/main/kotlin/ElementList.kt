@@ -119,6 +119,8 @@ class ElementList {
             "No 102 16 9\n" +
             "Lr 103 17 9";
     var elements : List<Element> = ArrayList<Element>();
+    var rows = 0
+    var cols = 0
 
     init{
         elements= stringToElementList(elementsAsString);
