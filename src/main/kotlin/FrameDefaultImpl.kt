@@ -5,20 +5,63 @@ import vl
 
 class FrameDefaultImpl(vararg line: String): Frame {
 
-    override val lines: List<String>
-
+    override val lines: MutableList<String>
 
 
     init {
-        lines= line.asList()
+        lines= ArrayList(line.asList())
     }
 
     override fun atLeftOf(other: Frame): Frame {
-        return this;
+        if(lines.size!=other.lines.size){
+            if(lines.size<other.lines.size) {
+                val s=vl.lines.get(0)+" ".repeat(lines.get(0).length-2)+vl.lines.get(0)
+                for(i in 0 until other.lines.size-lines.size){
+                    lines.add(lines.size-1,s)
+                }
+            }
+            else{
+                val s=vl.lines.get(0)+" ".repeat(other.lines.get(0).length-2)+vl.lines.get(0)
+                for(i in 0 until lines.size-other.lines.size){
+                    other.lines.add(other.lines.size-1,s)
+                }
+            }
+        }
+        return other
     }
 
     override fun onTopOf(other: Frame): Frame {
-        return this;
+        val thisLength = lines.get(0).length
+        val otherLength = other.lines.get(0).length
+        if(thisLength != otherLength){
+            if(thisLength < otherLength) {
+                val diff = otherLength - thisLength
+                val leftDiff=diff/2+(diff%2)
+                for(i in 0 until lines.size){
+                    val _line=lines.get(i)
+                    when(i){
+                        0, lines.size-1 -> lines.set(i, _line+hl.lines.get(0).repeat(diff))
+                        else ->{
+                            lines.set(i, _line.substring(0,2)+" ".repeat(leftDiff)+_line.substring(2,_line.length-2)+" ".repeat(diff-leftDiff)+_line.substring(_line.length-2))
+                        }
+                    }
+                }
+            }
+            else{
+                val diff = thisLength - otherLength
+                val leftDiff=diff/2+(diff%2)
+                for(i in 0 until other.lines.size){
+                    val _line=other.lines.get(i)
+                    when(i){
+                        0, other.lines.size-1 -> other.lines.set(i, _line+hl.lines.get(0).repeat(diff))
+                        else ->{
+                            other.lines.set(i, _line.substring(0,2)+" ".repeat(leftDiff)+_line.substring(2,_line.length-2)+" ".repeat(diff-leftDiff)+_line.substring(_line.length-2))
+                        }
+                    }
+                }
+            }
+        }
+        return other
     }
 
     override fun toString(): String {
@@ -66,6 +109,21 @@ class FrameDefaultImpl(vararg line: String): Frame {
             s.add(temp)
         }
         return FrameDefaultImpl(*s.toTypedArray())
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FrameDefaultImpl
+
+        if (lines != other.lines) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return lines.hashCode()
     }
 
 

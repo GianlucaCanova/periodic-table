@@ -5,6 +5,6 @@ interface Frame {
 
     fun onTopOf(other: Frame): Frame
 
-    val lines: List<String>
+    val lines: MutableList<String>
 
 }
