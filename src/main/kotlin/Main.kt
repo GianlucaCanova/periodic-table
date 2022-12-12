@@ -12,9 +12,14 @@ fun main() {
     val eL = ElementList()
     println(eL.elements)
     val frame=FrameDefaultImpl()
-    for(e in eL.elements){
-        println(frame.elementBox(e))
+    var matrix = Array(eL.rows) { row -> Array<Frame>(eL.cols){FrameDefaultImpl()} }
+    for (e in eL.elements){
+        matrix[e.period-1][e.group-1]= frame.elementBox(e)
     }
-
+    for(arr in matrix){
+        for(f in arr){
+            println(f)
+        }
+    }
 }
 

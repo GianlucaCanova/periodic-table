@@ -32,35 +32,15 @@ class FrameDefaultImpl(vararg line: String): Frame {
 
     fun elementFrame(e: Element): Frame {
         return FrameDefaultImpl(e.symbol,e.atomicNumber.toString())
-        /*val atomicLen = numberOfDigits(e.atomicNumber)
-        var s = ArrayList<String>()
-        if (e.symbol.length > atomicLen) {
-            s.add(" " + e.symbol + " ")
-            var temp = " "
-            val diff = e.symbol.length - atomicLen
-            for (i in 0 until diff) {
-                temp += " "
-            }
-            temp += e.atomicNumber.toString() + " "
-            s.add(temp)
-        } else {
-            var temp = " "
-            val diff = atomicLen - e.symbol.length
-            for (i in 0 until diff) {
-                temp += " "
-            }
-            temp += e.symbol + " "
-            s.add(temp)
-            s.add(" " + e.atomicNumber.toString() + " ")
-        }
-        return FrameDefaultImpl(*s.toTypedArray())*/
+
     }
 
     fun elementBox(e: Element): Frame {
         val content=elementFrame(e)
         val lens = content.lines
-        val maxLen = lens.stream().
-        max(Comparator.comparingInt(String::length)).get().length;
+        val maxLen=lens.maxWith(Comparator.comparingInt{it.length}).length
+        /*val maxLen = lens.stream().
+        max(Comparator.comparingInt(String::length)).get().length;*/
         var s = ArrayList<String>()
         var temp: String
         val spaceInside=maxLen+2
@@ -88,18 +68,6 @@ class FrameDefaultImpl(vararg line: String): Frame {
         return FrameDefaultImpl(*s.toTypedArray())
     }
 
-    /*override fun toString(): String {
-        var res=" "+lines[0]+"\n"
-        val distance=lines[0].length
-        for(i in lines[1]){
-            res+=i
-            for(j in lines[0]){
-                res+=" "
-            }
-            res+=i+"\n"
-        }
-        res+=" "+lines[0]
-        return res;
-    }*/
+
 }
 

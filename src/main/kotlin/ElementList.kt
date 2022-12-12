@@ -124,6 +124,8 @@ class ElementList {
 
     init{
         elements= stringToElementList(elementsAsString);
+        rows=elements.maxWith(Comparator.comparingInt { it.period }).period
+        cols=elements.maxWith(Comparator.comparingInt{it.group}).group
     }
 
     private fun stringToElementList(text: String): List<Element>{
