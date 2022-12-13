@@ -11,7 +11,7 @@ val hl:Frame = FrameDefaultImpl("-")
 fun main() {
     val eL = ElementList()
     println(eL.elements)
-    val empty: Frame = FrameDefaultImpl(" -- ","|  |"," -- ")
+    val empty: Frame = FrameDefaultImpl("    ","    ","    ")
     val frame=FrameDefaultImpl()
     var matrix = Array(eL.rows) { row -> Array<Frame>(eL.cols){FrameDefaultImpl(*empty.lines.toTypedArray())} }
     for (e in eL.elements){
@@ -58,23 +58,76 @@ fun main() {
 
 fun printTable(matrix: Array<Array<Frame>>): String{
     var result=""
+    var nextRightFrame: Frame
+    var nextBottomArray= matrix.get(0)
+    var nextBottomFrame: Frame
     for(j in 0 until matrix.size){
+        if(j<matrix.size-1){
+            nextBottomArray=matrix.get(j+1)
+        }
         val array=matrix.get(j)
         val first=array.get(0)
         var lines=ArrayList<String>()
+        nextRightFrame=array.get(1)
+        var rightHorizontalMargin=horizontalMarginChoice(first, nextRightFrame)
         if(j>0)
-            first.lines.forEachIndexed { i, s -> if(i>0)  lines.add(s+"") }
+            first.lines.forEachIndexed { i, s -> if(i>0)  lines.add(s.substring(0,s.length-1)+rightHorizontalMargin.get(i)) }
         else
-            first.lines.forEach { s -> lines.add(s+"")}
+            first.lines.forEachIndexed { i, s -> lines.add(s.substring(0,s.length-1)+rightHorizontalMargin.get(i))}
         for(i in 1 until array.size){
-            val diff=array.get(i).lines.size-lines.size
-            for (j in 0 until lines.size){
-                lines.set(j, lines.get(j)+array.get(i).lines.get(j+diff).substring(1))
+            if(i!=array.lastIndex){
+                nextRightFrame=array.get(i+1)
             }
+            rightHorizontalMargin=horizontalMarginChoice(array.get(i), nextRightFrame)
+            val diff=array.get(i).lines.size-lines.size
+            for (j in 0 until lines.lastIndex){
+                lines.set(j, lines.get(j)+array.get(i).lines.get(j+diff).substring(1,array.get(i).lines.get(j+diff).lastIndex)+rightHorizontalMargin.get(j+diff))
+            }
+            nextBottomFrame=nextBottomArray.get(i)
+            val rightVerticalMargin=verticalMarginChoice(array.get(i), nextBottomFrame).substring(1)
+            lines.set(lines.lastIndex, lines.get(lines.lastIndex)+rightVerticalMargin)
         }
         for(line in lines){
            result+=line+"\n"
         }
     }
     return result
+}
+
+fun horizontalMarginChoice(left: Frame, right: Frame): ArrayList<String>{
+    var whichKeep : Frame? = null
+    var result= ArrayList<String>()
+    for(i in 0 until left.lines.size){
+        if(whichKeep == null) {
+            val leftChar = left.lines.get(i).get(0).toString()
+            val rightChar = right.lines.get(i).get(0).toString()
+            if (leftChar.equals(" ") and rightChar.equals(" ")){
+                result.add(leftChar)
+            }
+            else{
+                if(leftChar.equals(" ")){
+                    result.add(rightChar)
+                    whichKeep=right
+                }
+                else{
+                    result.add(leftChar)
+                    whichKeep=left
+                }
+            }
+        }
+        else{
+            val toInsert = whichKeep.lines.get(i).get(0).toString()
+            result.add(toInsert)
+        }
+    }
+    return result
+}
+
+fun verticalMarginChoice(top: Frame, bottom: Frame): String{
+    if(top.lines.get(0).contains(hl.lines.get(0))){
+        return top.lines.get(0)
+    }
+    else{
+        return bottom.lines.get(0)
+    }
 }
