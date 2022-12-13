@@ -7,7 +7,6 @@ class FrameDefaultImpl(vararg line: String): Frame {
 
     override val lines: MutableList<String>
     val SPACE : String= " "
-    var element: Element? = null
 
     init {
         lines= ArrayList(line.asList())
@@ -75,7 +74,6 @@ class FrameDefaultImpl(vararg line: String): Frame {
     }
 
     fun elementFrame(e: Element): Frame {
-        element=e
         return FrameDefaultImpl(e.symbol,e.atomicNumber.toString())
 
     }
@@ -90,12 +88,15 @@ class FrameDefaultImpl(vararg line: String): Frame {
         var temp: String
         val spaceInside=maxLen+2
         val totSpace=spaceInside+2
-        val totRows= content.lines.size+2
+        val totRows= content.lines.size+3
         for(j in 0 until totRows) {
             temp=""
             when(j){
                 0, (totRows-1) -> {
                     temp += SPACE+ hl.lines.get(0).repeat(spaceInside) + SPACE
+                }
+                totRows-2 ->{
+                    temp += vl.lines.get(0)+ SPACE.repeat(spaceInside)+ vl.lines.get(0)
                 }
                 else ->{
                     temp+=vl.lines.get(0)

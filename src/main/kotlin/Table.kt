@@ -3,13 +3,17 @@ package org.example
 import hl
 
 class Table(val matrix: Array<Array<Frame>>, val elementMatrix: Array<Array<Int?>>) {
-    var lastSpecialChar = "/"
+
     val specialCases: List<Frame>
+    var map: MutableMap<Frame, List<String>>
     init{
+       map = mutableMapOf()
        val specialCasesCordinates = searchingSpecialCase()
        specialCases=ArrayList<Frame>()
        for(case in specialCasesCordinates){
-           specialCases.add(matrix.get(case.indexRow).get(case.indexCol))
+           val frame=matrix.get(case.indexRow).get(case.indexCol)
+           map.put(frame, case.marginRight)
+           specialCases.add(frame)
        }
     }
     fun printTable(): String {
@@ -74,11 +78,11 @@ class Table(val matrix: Array<Array<Frame>>, val elementMatrix: Array<Array<Int?
         return result
     }
 
-    fun horizontalMarginChoice(left: Frame, right: Frame): ArrayList<String> {
+    fun horizontalMarginChoice(left: Frame, right: Frame): List<String> {
         var result = ArrayList<String>()
         for(case in specialCases){
             if(case===left)
-                return specialHorizontalMargin(left.lines.size)
+                return map.getOrDefault(case, ArrayList<String>())
         }
         var whichKeep: Frame? = null
         for (i in 0 until left.lines.size) {
@@ -112,7 +116,8 @@ class Table(val matrix: Array<Array<Frame>>, val elementMatrix: Array<Array<Int?
         }
     }
 
-    fun specialHorizontalMargin(height: Int): ArrayList<String> {
+    fun specialHorizontalMargin(height: Int, lastSymbol: String): List<String> {
+        var lastSpecialChar = lastSymbol
         var result = ArrayList<String>()
         result.add(" ")
         for (i in 1 until height - 1) {
@@ -127,8 +132,9 @@ class Table(val matrix: Array<Array<Frame>>, val elementMatrix: Array<Array<Int?
         return result
     }
 
-    fun searchingSpecialCase(): List<MatrixCordinates> {
-        var result = ArrayList<MatrixCordinates>()
+    fun searchingSpecialCase(): List<SpecialCordinatesAndMargin> {
+        var symbol="\\"
+        var result = ArrayList<SpecialCordinatesAndMargin>()
         for(j in 0 until elementMatrix.size){
             var previusElement=elementMatrix.get(j).get(0)
             for(i in 1 until elementMatrix.get(j).size){
@@ -137,12 +143,16 @@ class Table(val matrix: Array<Array<Frame>>, val elementMatrix: Array<Array<Int?
                     continue
                 else
                     if(previusElement+1 != currentElement){
-                        result.add(MatrixCordinates(j,i-1))
+                        var specialLineHeight = matrix[j][i-1].lines.size
+                        result.add(SpecialCordinatesAndMargin(j,i-1, specialHorizontalMargin(specialLineHeight, symbol)))
                         var temp=searchByAtomicNumber(previusElement+1)
                         temp.indexCol-=1
-                        println("Cordinates: ${temp}")
-                        result.add(temp)
-                        result.add(searchByAtomicNumber(currentElement-1))
+                        specialLineHeight = matrix[temp.indexRow][temp.indexCol].lines.size
+                        result.add(SpecialCordinatesAndMargin(temp.indexRow,temp.indexCol, specialHorizontalMargin(specialLineHeight, symbol)))
+                        temp=searchByAtomicNumber(currentElement-1)
+                        specialLineHeight = matrix[temp.indexRow][temp.indexCol].lines.size
+                        result.add(SpecialCordinatesAndMargin(temp.indexRow,temp.indexCol, specialHorizontalMargin(specialLineHeight, symbol)))
+                        symbol= if( symbol.equals("\\") ) "/" else "\\"
                     }
                 previusElement=currentElement
             }
@@ -150,14 +160,16 @@ class Table(val matrix: Array<Array<Frame>>, val elementMatrix: Array<Array<Int?
         return result
     }
 
-    fun searchByAtomicNumber(atomic: Int): MatrixCordinates{
+    fun searchByAtomicNumber(atomic: Int): SpecialCordinates{
         for(i in 0 until elementMatrix.size){
             val index=elementMatrix.get(i).indexOf(atomic)
             if(index>=0)
-                return MatrixCordinates(i, index)
+                return SpecialCordinates(i, index)
         }
-        return MatrixCordinates(-1,-1)
+        return SpecialCordinates(-1,-1)
     }
 
-    data class MatrixCordinates(var indexRow: Int, var indexCol: Int)
+    class SpecialCordinates(var indexRow: Int, var indexCol: Int)
+    class SpecialCordinatesAndMargin(var indexRow: Int, var indexCol: Int, var marginRight: List<String>)
+
 }
