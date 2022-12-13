@@ -6,7 +6,7 @@ import vl
 class FrameDefaultImpl(vararg line: String): Frame {
 
     override val lines: MutableList<String>
-
+    val SPACE : String= " "
 
     init {
         lines= ArrayList(line.asList())
@@ -15,13 +15,13 @@ class FrameDefaultImpl(vararg line: String): Frame {
     override fun atLeftOf(other: Frame): Frame {
         if(lines.size!=other.lines.size){
             if(lines.size<other.lines.size) {
-                val s=vl.lines.get(0)+" ".repeat(lines.get(0).length-2)+vl.lines.get(0)
+                val s=vl.lines.get(0)+SPACE.repeat(lines.get(0).length-2)+vl.lines.get(0)
                 for(i in 0 until other.lines.size-lines.size){
                     lines.add(lines.size-1,s)
                 }
             }
             else{
-                val s=vl.lines.get(0)+" ".repeat(other.lines.get(0).length-2)+vl.lines.get(0)
+                val s=vl.lines.get(0)+SPACE.repeat(other.lines.get(0).length-2)+vl.lines.get(0)
                 for(i in 0 until lines.size-other.lines.size){
                     other.lines.add(other.lines.size-1,s)
                 }
@@ -40,9 +40,9 @@ class FrameDefaultImpl(vararg line: String): Frame {
                 for(i in 0 until lines.size){
                     val _line=lines.get(i)
                     when(i){
-                        0, lines.size-1 -> lines.set(i, _line+hl.lines.get(0).repeat(diff))
+                        0, lines.size-1 -> lines.set(i, _line.substring(0,_line.length-1)+hl.lines.get(0).repeat(diff)+_line.get(_line.length-1).toString())
                         else ->{
-                            lines.set(i, _line.substring(0,2)+" ".repeat(leftDiff)+_line.substring(2,_line.length-2)+" ".repeat(diff-leftDiff)+_line.substring(_line.length-2))
+                            lines.set(i, _line.substring(0,2)+SPACE.repeat(leftDiff)+_line.substring(2,_line.length-2)+SPACE.repeat(diff-leftDiff)+_line.substring(_line.length-2))
                         }
                     }
                 }
@@ -53,9 +53,9 @@ class FrameDefaultImpl(vararg line: String): Frame {
                 for(i in 0 until other.lines.size){
                     val _line=other.lines.get(i)
                     when(i){
-                        0, other.lines.size-1 -> other.lines.set(i, _line+hl.lines.get(0).repeat(diff))
+                        0, other.lines.size-1 -> other.lines.set(i, _line.substring(0,_line.length-1)+hl.lines.get(0).repeat(diff)+_line.get(_line.length-1).toString())
                         else ->{
-                            other.lines.set(i, _line.substring(0,2)+" ".repeat(leftDiff)+_line.substring(2,_line.length-2)+" ".repeat(diff-leftDiff)+_line.substring(_line.length-2))
+                            other.lines.set(i, _line.substring(0,2)+SPACE.repeat(leftDiff)+_line.substring(2,_line.length-2)+SPACE.repeat(diff-leftDiff)+_line.substring(_line.length-2))
                         }
                     }
                 }
@@ -93,16 +93,16 @@ class FrameDefaultImpl(vararg line: String): Frame {
             temp=""
             when(j){
                 0, (totRows-1) -> {
-                    temp += hl.lines.get(0).repeat(totSpace)
+                    temp += SPACE+ hl.lines.get(0).repeat(spaceInside) + SPACE
                 }
                 else ->{
                     temp+=vl.lines.get(0)
                     val numSpaces=spaceInside-content.lines.get(j-1).length
                     val leftSpaces=numSpaces/2
                     val rightSpaces=numSpaces-leftSpaces
-                    temp+=" ".repeat(leftSpaces)
+                    temp+=SPACE.repeat(leftSpaces)
                     temp+=content.lines.get(j-1)
-                    temp+=" ".repeat(rightSpaces)
+                    temp+=SPACE.repeat(rightSpaces)
                     temp+=vl.lines.get(0)
                 }
             }
