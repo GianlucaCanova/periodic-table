@@ -2,6 +2,7 @@ package org.example
 
 import hl
 import vl
+import java.util.regex.Pattern
 
 class FrameDefaultImpl(vararg line: String): Frame {
 
@@ -11,6 +12,7 @@ class FrameDefaultImpl(vararg line: String): Frame {
     init {
         lines= ArrayList(line.asList())
     }
+
 
     override fun atLeftOf(other: Frame): Frame {
         if(lines.size!=other.lines.size){
@@ -31,12 +33,29 @@ class FrameDefaultImpl(vararg line: String): Frame {
     }
 
     override fun onTopOf(other: Frame): Frame {
+        //alignment(other)
         val thisLength = lines.get(0).length
         val otherLength = other.lines.get(0).length
+        val patternLetters= Pattern.compile("\\p{Alpha}")
         if(thisLength != otherLength){
             if(thisLength < otherLength) {
                 val diff = otherLength - thisLength
-                val leftDiff=diff/2+(diff%2)
+
+                var leftDiff=0
+                for(i in 0 until lines.size){
+                    val matcher1=patternLetters.matcher(lines.get(i))
+                    val matcher2=patternLetters.matcher(other.lines.get(i))
+                    if(matcher1.find() && matcher2.find()){
+                        val start1=matcher1.start()
+                        val start2=matcher2.start()
+                        if(start1!=start2){
+                            if(start1<start2){
+                                leftDiff=start2-start1
+                            }
+                        }
+                        break
+                    }
+                }
                 for(i in 0 until lines.size){
                     val _line=lines.get(i)
                     when(i){
@@ -49,7 +68,21 @@ class FrameDefaultImpl(vararg line: String): Frame {
             }
             else{
                 val diff = thisLength - otherLength
-                val leftDiff=diff/2+(diff%2)
+                var leftDiff=0
+                for(i in 0 until lines.size){
+                    val matcher1=patternLetters.matcher(lines.get(i))
+                    val matcher2=patternLetters.matcher(other.lines.get(i))
+                    if(matcher1.find() && matcher2.find()){
+                        val start1=matcher1.start()
+                        val start2=matcher2.start()
+                        if(start1!=start2){
+                            if(start1<start2){
+                                leftDiff=start2-start1
+                            }
+                        }
+                        break
+                    }
+                }
                 for(i in 0 until other.lines.size){
                     val _line=other.lines.get(i)
                     when(i){
@@ -74,7 +107,8 @@ class FrameDefaultImpl(vararg line: String): Frame {
     }
 
     fun elementFrame(e: Element): Frame {
-        return FrameDefaultImpl(e.symbol,e.atomicNumber.toString())
+
+        return FrameDefaultImpl(e.atomicNumber.toString(),e.symbol)
 
     }
 
@@ -82,8 +116,7 @@ class FrameDefaultImpl(vararg line: String): Frame {
         val content=elementFrame(e)
         val lens = content.lines
         val maxLen=lens.maxWith(Comparator.comparingInt{it.length}).length
-        /*val maxLen = lens.stream().
-        max(Comparator.comparingInt(String::length)).get().length;*/
+
         var s = ArrayList<String>()
         var temp: String
         val spaceInside=maxLen+2

@@ -5,14 +5,14 @@ import hl
 class Table(val matrix: Array<Array<Frame>>, val elementMatrix: Array<Array<Int?>>) {
 
     val specialCases: List<Frame>
-    var map: MutableMap<Frame, List<String>>
+    var marginCases: MutableList<List<String>>
     init{
-       map = mutableMapOf()
        val specialCasesCordinates = searchingSpecialCase()
        specialCases=ArrayList<Frame>()
+       marginCases=ArrayList()
        for(case in specialCasesCordinates){
            val frame=matrix.get(case.indexRow).get(case.indexCol)
-           map.put(frame, case.marginRight)
+           marginCases.add(case.marginRight)
            specialCases.add(frame)
        }
     }
@@ -80,9 +80,9 @@ class Table(val matrix: Array<Array<Frame>>, val elementMatrix: Array<Array<Int?
 
     fun horizontalMarginChoice(left: Frame, right: Frame): List<String> {
         var result = ArrayList<String>()
-        for(case in specialCases){
-            if(case===left)
-                return map.getOrDefault(case, ArrayList<String>())
+        for(caseIndex in 0 until specialCases.size){
+            if(specialCases.get(caseIndex)===left)
+                return marginCases.get(caseIndex)
         }
         var whichKeep: Frame? = null
         for (i in 0 until left.lines.size) {
@@ -171,5 +171,7 @@ class Table(val matrix: Array<Array<Frame>>, val elementMatrix: Array<Array<Int?
 
     class SpecialCordinates(var indexRow: Int, var indexCol: Int)
     class SpecialCordinatesAndMargin(var indexRow: Int, var indexCol: Int, var marginRight: List<String>)
+
+
 
 }

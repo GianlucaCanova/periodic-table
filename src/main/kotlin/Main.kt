@@ -18,7 +18,7 @@ fun main() {
         matrix[e.period - 1][e.group - 1] = frame.elementBox(e)
         atomicMatrix[e.period-1][e.group-1] = e.atomicNumber
     }
-
+/*
     for (arr in matrix) {
         var previusFrame = arr.get(0)
         var loop = true
@@ -53,7 +53,48 @@ fun main() {
             else
                 startIndex = 0
         } while (loop)
-    }
+    }*/
+    checkOnRight(matrix)
+    checkOnBottom(matrix)
     val table= Table(matrix, atomicMatrix)
     println(table.printTable())
+}
+
+fun checkOnRight(matrix: Array<Array<Frame>>){
+    for (arr in matrix) {
+        var previusFrame = arr.get(0)
+        var loop = true
+        var startIndex = 1
+        do {
+            for (i in startIndex until arr.size) {
+                previusFrame = previusFrame.atLeftOf(arr.get(i))
+            }
+            val heightFirstFrame = arr.get(0).lines.size
+            val heightLastFrame = arr.get(arr.size - 1).lines.size
+            if (heightFirstFrame == heightLastFrame)
+                loop = false
+            else
+                startIndex = 0
+
+        } while (loop)
+    }
+}
+
+fun checkOnBottom(matrix: Array<Array<Frame>>){
+    for (j in 0 until matrix.get(0).size) {
+        var previusFrame = matrix.get(0).get(j)
+        var loop = true
+        var startIndex = 1
+        do {
+            for (i in startIndex until matrix.size) {
+                previusFrame = previusFrame.onTopOf(matrix.get(i).get(j))
+            }
+            val widthFirstFrame = matrix.get(0).get(j).lines.get(0).length
+            val widthLastFrame = matrix.get(matrix.size - 1).get(j).lines.get(0).length
+            if (widthFirstFrame == widthLastFrame)
+                loop = false
+            else
+                startIndex = 0
+        } while (loop)
+    }
 }

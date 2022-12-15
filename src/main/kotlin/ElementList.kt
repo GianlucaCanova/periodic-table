@@ -128,12 +128,11 @@ class ElementList {
         cols=elements.maxWith(Comparator.comparingInt{it.group}).group
     }
 
-    private fun stringToElementList(text: String): List<Element>{
+    fun stringToElementList(text: String): List<Element>{
         var result= ArrayList<Element>()
         val textLines= text.lines()
         for (line in textLines){
-            var stringSplitted = line.split(" ");
-            //println(stringSplitted)
+            var stringSplitted = line.split(" ")
             result.add(Element(stringSplitted[0],stringSplitted[1].toInt(),stringSplitted[2].toInt(),stringSplitted[3].toInt()))
         }
         return result
